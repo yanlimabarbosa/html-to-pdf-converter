@@ -19,19 +19,38 @@ export async function POST(request: NextRequest) {
 
     const htmlContent = await file.text()
     
-    // Launch Chromium depending on environment (serverless vs local)
-    const isProd = !!(process.env.NETLIFY || process.env.VERCEL || process.env.AWS_REGION)
+    // Launch Chromium - use serverless on Linux or when forced, fallback to local Chrome on Windows
+    const isServerless = !!(process.env.NETLIFY || process.env.VERCEL || process.env.AWS_REGION)
+    const isLinux = process.platform === 'linux'
+    const useServerlessChromium = isServerless && isLinux
 
-    const browser = isProd
-      ? await puppeteerCore.launch({
-          args: chromium.args,
-          executablePath: await chromium.executablePath(),
-          headless: true,
-        })
-      : await puppeteer.launch({
-          headless: true,
-          args: ['--no-sandbox', '--disable-setuid-sandbox'],
-        })
+    let browser
+    
+    if (useServerlessChromium) {
+      // Serverless Linux - use @sparticuz/chromium-min
+      browser = await puppeteerCore.launch({
+        args: chromium.args,
+        executablePath: await chromium.executablePath(),
+        headless: true,
+      })
+    } else if (isServerless && !isLinux) {
+      // Serverless non-Linux (local testing) - use puppeteer-core with system Chrome
+      const executablePath = process.platform === 'win32' 
+        ? 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe'
+        : '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'
+      
+      browser = await puppeteerCore.launch({
+        executablePath,
+        headless: true,
+        args: ['--no-sandbox', '--disable-setuid-sandbox'],
+      })
+    } else {
+      // Local development - use full puppeteer
+      browser = await puppeteer.launch({
+        headless: true,
+        args: ['--no-sandbox', '--disable-setuid-sandbox'],
+      })
+    }
     
     const page = await browser.newPage()
     

@@ -11,9 +11,6 @@ export default function Home() {
           <p className="text-lg text-gray-300 mb-2">
             Convert your HTML files to PDF using Puppeteer
           </p>
-          <p className="text-sm text-gray-400">
-            Powered by Next.js • Same logic as your convert-to-pdf.js script
-          </p>
         </div>
         
         <FileUpload />

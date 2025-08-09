@@ -83,8 +83,18 @@ export async function POST(request: NextRequest) {
     
   } catch (error) {
     console.error('Error converting HTML to PDF:', error)
+    console.error('Platform:', process.platform)
+    console.error('Environment:', { 
+      NETLIFY: process.env.NETLIFY,
+      NODE_VERSION: process.version,
+      isServerless: !!(process.env.NETLIFY || process.env.VERCEL || process.env.AWS_REGION)
+    })
     return NextResponse.json(
-      { error: 'Failed to convert HTML to PDF' },
+      { 
+        error: 'Failed to convert HTML to PDF',
+        details: error instanceof Error ? error.message : String(error),
+        platform: process.platform
+      },
       { status: 500 }
     )
   }

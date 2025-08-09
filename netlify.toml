@@ -8,5 +8,13 @@
 [build]
   command = "npm run build"
   publish = ".next"
+  
+[[functions]]
+  path = ".next/server/app/api/convert-pdf/route.js"
+  node_bundler = "esbuild"
+  included_files = ["node_modules/@sparticuz/chromium-min/**"]
+
+[build.environment]
+  NODE_VERSION = "18"
 
 

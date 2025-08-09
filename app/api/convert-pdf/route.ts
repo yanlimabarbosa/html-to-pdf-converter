@@ -1,5 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
+import chromium from '@sparticuz/chromium-min'
 import puppeteer from 'puppeteer'
+import puppeteerCore from 'puppeteer-core'
+
+export const runtime = 'nodejs'
 
 export async function POST(request: NextRequest) {
   try {
@@ -15,11 +19,19 @@ export async function POST(request: NextRequest) {
 
     const htmlContent = await file.text()
     
-    // Launch Puppeteer (using the same logic as your convert-to-pdf.js)
-    const browser = await puppeteer.launch({
-      headless: true,
-      args: ['--no-sandbox', '--disable-setuid-sandbox']
-    })
+    // Launch Chromium depending on environment (serverless vs local)
+    const isProd = !!(process.env.NETLIFY || process.env.VERCEL || process.env.AWS_REGION)
+
+    const browser = isProd
+      ? await puppeteerCore.launch({
+          args: chromium.args,
+          executablePath: await chromium.executablePath(),
+          headless: chromium.headless,
+        })
+      : await puppeteer.launch({
+          headless: true,
+          args: ['--no-sandbox', '--disable-setuid-sandbox'],
+        })
     
     const page = await browser.newPage()
     

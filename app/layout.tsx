@@ -14,12 +14,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "HTML to PDF Converter",
-  description: "Convert HTML files to PDF using Puppeteer - Fast, reliable, server-side conversion",
-  icons: {
-    icon: '/favicon.svg',
-    shortcut: '/favicon.svg',
-    apple: '/favicon.svg',
-  },
+  description: "Convert HTML to PDF Converter",
 };
 
 export default function RootLayout({

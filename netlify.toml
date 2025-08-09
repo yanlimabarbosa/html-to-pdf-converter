@@ -1,0 +1,12 @@
+[functions]
+  node_bundler = "esbuild"
+  included_files = [
+    "node_modules/@sparticuz/chromium-min/**",
+    "node_modules/puppeteer-core/**"
+  ]
+
+[build]
+  command = "npm run build"
+  publish = ".next"
+
+

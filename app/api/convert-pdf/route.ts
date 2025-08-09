@@ -26,7 +26,7 @@ export async function POST(request: NextRequest) {
       ? await puppeteerCore.launch({
           args: chromium.args,
           executablePath: await chromium.executablePath(),
-          headless: chromium.headless,
+          headless: true,
         })
       : await puppeteer.launch({
           headless: true,
